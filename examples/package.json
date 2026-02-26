@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "multisettle": "tsx multisettle-test.ts",
+    "settlement": "tsx multisettle-test.ts",
     "multisettle:local": "FACILITATOR_URL=http://localhost:3001 tsx multisettle-test.ts"
   },
   "dependencies": {
@@ -15,4 +15,3 @@
     "typescript": "^5.4.0"
   }
 }
-

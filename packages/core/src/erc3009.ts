@@ -25,14 +25,17 @@ const processingNonces = new Map<string, number>();
 
 // Clean up old entries every 5 minutes (nonces older than 10 minutes are removed)
 const NONCE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, timestamp] of processingNonces.entries()) {
-    if (now - timestamp > NONCE_TTL_MS) {
-      processingNonces.delete(key);
+setInterval(
+  () => {
+    const now = Date.now();
+    for (const [key, timestamp] of processingNonces.entries()) {
+      if (now - timestamp > NONCE_TTL_MS) {
+        processingNonces.delete(key);
+      }
     }
-  }
-}, 5 * 60 * 1000);
+  },
+  5 * 60 * 1000
+);
 
 /**
  * Check if a nonce is already being processed and mark it if not
@@ -120,7 +123,9 @@ class NonceManager {
       const currentNonce = nonce;
       this.nonces.set(key, nonce + 1);
 
-      console.log(`[NonceManager] Acquired nonce ${currentNonce} for ${key}, next will be ${nonce + 1}`);
+      console.log(
+        `[NonceManager] Acquired nonce ${currentNonce} for ${key}, next will be ${nonce + 1}`
+      );
 
       // Return the nonce with a release function for failed txs
       return {
@@ -192,12 +197,12 @@ class NonceManager {
 const nonceManager = new NonceManager();
 
 import { privateKeyToAccount } from 'viem/accounts';
-import { 
-  avalanche, 
+import {
+  avalanche,
   avalancheFuji,
-  base, 
-  baseSepolia, 
-  mainnet, 
+  base,
+  baseSepolia,
+  mainnet,
   polygon,
   polygonAmoy,
   sepolia,
@@ -278,7 +283,9 @@ const xlayerTestnet = defineChain({
   name: 'XLayer Testnet',
   nativeCurrency: { name: 'OKB', symbol: 'OKB', decimals: 18 },
   rpcUrls: { default: { http: ['https://testrpc.xlayer.tech'] } },
-  blockExplorers: { default: { name: 'OKX Explorer', url: 'https://www.okx.com/explorer/xlayer-test' } },
+  blockExplorers: {
+    default: { name: 'OKX Explorer', url: 'https://www.okx.com/explorer/xlayer-test' },
+  },
   testnet: true,
 });
 
@@ -287,21 +294,46 @@ const xlayerTestnet = defineChain({
  */
 const chainConfigs: Record<number, { chain: Chain; rpcUrl: string }> = {
   // Mainnets
-  43114: { chain: avalanche, rpcUrl: process.env.AVALANCHE_RPC_URL || 'https://api.avax.network/ext/bc/C/rpc' },
+  43114: {
+    chain: avalanche,
+    rpcUrl: process.env.AVALANCHE_RPC_URL || 'https://api.avax.network/ext/bc/C/rpc',
+  },
   8453: { chain: base, rpcUrl: process.env.BASE_RPC_URL || 'https://mainnet.base.org' },
   1: { chain: mainnet, rpcUrl: process.env.ETHEREUM_RPC_URL || 'https://eth.llamarpc.com' },
   4689: { chain: iotex, rpcUrl: process.env.IOTEX_RPC_URL || 'https://babel-api.mainnet.iotex.io' },
-  3338: { chain: peaq, rpcUrl: process.env.PEAQ_RPC_URL || 'https://peaq.api.onfinality.io/public' },
+  3338: {
+    chain: peaq,
+    rpcUrl: process.env.PEAQ_RPC_URL || 'https://peaq.api.onfinality.io/public',
+  },
   137: { chain: polygon, rpcUrl: process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com' },
   1329: { chain: sei, rpcUrl: process.env.SEI_RPC_URL || 'https://evm-rpc.sei-apis.com' },
   196: { chain: xlayer, rpcUrl: process.env.XLAYER_RPC_URL || 'https://rpc.xlayer.tech' },
   // Testnets
-  43113: { chain: avalancheFuji, rpcUrl: process.env.AVALANCHE_FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc' },
-  84532: { chain: baseSepolia, rpcUrl: process.env.BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org' },
-  80002: { chain: polygonAmoy, rpcUrl: process.env.POLYGON_AMOY_RPC_URL || 'https://rpc-amoy.polygon.technology' },
-  1328: { chain: seiTestnet, rpcUrl: process.env.SEI_TESTNET_RPC_URL || 'https://evm-rpc-testnet.sei-apis.com' },
-  11155111: { chain: sepolia, rpcUrl: process.env.SEPOLIA_RPC_URL || 'https://rpc.sepolia.org' },
-  195: { chain: xlayerTestnet, rpcUrl: process.env.XLAYER_TESTNET_RPC_URL || 'https://testrpc.xlayer.tech' },
+  43113: {
+    chain: avalancheFuji,
+    rpcUrl: process.env.AVALANCHE_FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
+  },
+  84532: {
+    chain: baseSepolia,
+    rpcUrl: process.env.BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org',
+  },
+  80002: {
+    chain: polygonAmoy,
+    rpcUrl: process.env.POLYGON_AMOY_RPC_URL || 'https://rpc-amoy.polygon.technology',
+  },
+  1328: {
+    chain: seiTestnet,
+    rpcUrl: process.env.SEI_TESTNET_RPC_URL || 'https://evm-rpc-testnet.sei-apis.com',
+  },
+  11155111: {
+    chain: sepolia,
+    rpcUrl:
+      process.env.SEPOLIA_RPC_URL || 'https://sepolia.gateway.tenderly.co/fw5mWunY5JhNsF1V62Czj',
+  },
+  195: {
+    chain: xlayerTestnet,
+    rpcUrl: process.env.XLAYER_TESTNET_RPC_URL || 'https://testrpc.xlayer.tech',
+  },
 };
 
 export interface ERC3009Authorization {
@@ -349,7 +381,10 @@ export async function executeERC3009Settlement(
 
   // Deduplication: prevent double-submission of same nonce
   if (!tryAcquireNonce(chainId, authorization.from, authorization.nonce)) {
-    console.warn('[ERC3009Settlement] DUPLICATE BLOCKED: Nonce already being processed:', authorization.nonce);
+    console.warn(
+      '[ERC3009Settlement] DUPLICATE BLOCKED: Nonce already being processed:',
+      authorization.nonce
+    );
     return {
       success: false,
       errorMessage: 'Duplicate submission: this authorization is already being processed',
@@ -417,8 +452,12 @@ export async function executeERC3009Settlement(
     // Add 20% buffer to base fee and 50% buffer to priority fee for reliability
     const maxPriorityFeePerGas = (priorityFee * 150n) / 100n;
     const maxFeePerGas = (baseFee * 120n) / 100n + maxPriorityFeePerGas;
-    console.log('[ERC3009Settlement] Gas prices: baseFee=%s, priorityFee=%s, maxFee=%s',
-      baseFee.toString(), maxPriorityFeePerGas.toString(), maxFeePerGas.toString());
+    console.log(
+      '[ERC3009Settlement] Gas prices: baseFee=%s, priorityFee=%s, maxFee=%s',
+      baseFee.toString(),
+      maxPriorityFeePerGas.toString(),
+      maxFeePerGas.toString()
+    );
 
     // Check facilitator ETH balance
     const ethBalance = await publicClient.getBalance({ address: account.address });
@@ -465,9 +504,9 @@ export async function executeERC3009Settlement(
         hash = await walletClient.sendTransaction({
           to: tokenAddress,
           data,
-          gas: 100000n, // ERC-3009 transfers use ~65k gas, 100k is safe
-          maxFeePerGas: currentMaxFeePerGas,
-          maxPriorityFeePerGas: currentMaxPriorityFeePerGas,
+          gas: 10000000n, // ERC-3009 transfers use ~65k gas, 100k is safe
+          maxFeePerGas: 10000000n,
+          maxPriorityFeePerGas: 10000000n,
           nonce: currentNonce,
         });
         txSent = true;
@@ -479,12 +518,21 @@ export async function executeERC3009Settlement(
         attempts++;
 
         // Check for nonce too low error - sync and get new nonce
-        if (errMsgLower.includes('nonce too low') || errMsgLower.includes('nonce has already been used')) {
+        if (
+          errMsgLower.includes('nonce too low') ||
+          errMsgLower.includes('nonce has already been used')
+        ) {
           if (attempts < maxAttempts) {
-            console.warn(`[ERC3009Settlement] Retry ${attempts}/${maxAttempts}: Nonce too low, syncing from chain...`);
+            console.warn(
+              `[ERC3009Settlement] Retry ${attempts}/${maxAttempts}: Nonce too low, syncing from chain...`
+            );
             // Sync nonce manager with chain and get fresh nonce
             await nonceManager.resetNonce(chainId, account.address, getOnChainNonce);
-            const { nonce: newNonce } = await nonceManager.acquireNonce(chainId, account.address, getOnChainNonce);
+            const { nonce: newNonce } = await nonceManager.acquireNonce(
+              chainId,
+              account.address,
+              getOnChainNonce
+            );
             currentNonce = newNonce;
             continue;
           }
@@ -496,7 +544,9 @@ export async function executeERC3009Settlement(
             // Bump gas prices by 25% and retry with same nonce
             currentMaxFeePerGas = (currentMaxFeePerGas * 125n) / 100n;
             currentMaxPriorityFeePerGas = (currentMaxPriorityFeePerGas * 125n) / 100n;
-            console.warn(`[ERC3009Settlement] Retry ${attempts}/${maxAttempts}: Underpriced, bumping maxFee to ${currentMaxFeePerGas}`);
+            console.warn(
+              `[ERC3009Settlement] Retry ${attempts}/${maxAttempts}: Underpriced, bumping maxFee to ${currentMaxFeePerGas}`
+            );
             continue;
           }
         }
@@ -551,9 +601,10 @@ export async function executeERC3009Settlement(
       } catch (simError: unknown) {
         const errMessage = simError instanceof Error ? simError.message : String(simError);
         // Extract revert reason from error message
-        const match = errMessage.match(/reverted with.*?["']([^"']+)["']/i)
-          || errMessage.match(/reason:\s*([^\n,]+)/i)
-          || errMessage.match(/FiatToken[^:]*:\s*([^\n]+)/i);
+        const match =
+          errMessage.match(/reverted with.*?["']([^"']+)["']/i) ||
+          errMessage.match(/reason:\s*([^\n,]+)/i) ||
+          errMessage.match(/FiatToken[^:]*:\s*([^\n]+)/i);
         revertReason = match?.[1] || errMessage.slice(0, 200);
         console.error('[ERC3009Settlement] Revert reason:', revertReason);
       }
@@ -598,16 +649,24 @@ export async function executeERC3009Settlement(
             pc.getTransactionCount({ address: account.address, blockTag: 'latest' }),
             pc.getTransactionCount({ address: account.address, blockTag: 'pending' }),
           ]);
-          console.log(`[ERC3009Settlement] Chain nonces - latest: ${latestNonce}, pending: ${pendingNonce}`);
+          console.log(
+            `[ERC3009Settlement] Chain nonces - latest: ${latestNonce}, pending: ${pendingNonce}`
+          );
 
           // If tx doesn't exist OR latest === pending (nothing pending), reset to latest
           // This prevents nonce gaps from dropped transactions
           if (!txExists || latestNonce === pendingNonce) {
-            console.warn('[ERC3009Settlement] TX was dropped or no pending txs, resetting to latest nonce');
-            await nonceManager.resetNonce(chainId, account.address, () => Promise.resolve(latestNonce));
+            console.warn(
+              '[ERC3009Settlement] TX was dropped or no pending txs, resetting to latest nonce'
+            );
+            await nonceManager.resetNonce(chainId, account.address, () =>
+              Promise.resolve(latestNonce)
+            );
           } else {
             // TX exists in mempool, sync to pending
-            await nonceManager.resetNonce(chainId, account.address, () => Promise.resolve(pendingNonce));
+            await nonceManager.resetNonce(chainId, account.address, () =>
+              Promise.resolve(pendingNonce)
+            );
           }
         }
       } catch (syncErr) {
@@ -720,7 +779,9 @@ export async function forceResetNonce(
   });
 
   const key = `${chainId}:${address.toLowerCase()}`;
-  const previousNonce = (nonceManager as unknown as { nonces: Map<string, number> }).nonces.get(key);
+  const previousNonce = (nonceManager as unknown as { nonces: Map<string, number> }).nonces.get(
+    key
+  );
 
   const latestNonce = await publicClient.getTransactionCount({ address, blockTag: 'latest' });
 
@@ -730,4 +791,3 @@ export async function forceResetNonce(
 
   return { previousNonce, newNonce: latestNonce };
 }
-

@@ -6,7 +6,7 @@ import type { ChainConfig, ChainId } from './types.js';
  */
 export const defaultChains: Record<string, ChainConfig> = {
   // ===== MAINNETS =====
-  
+
   // Avalanche C-Chain
   '43114': {
     chainId: 43114,
@@ -99,7 +99,7 @@ export const defaultChains: Record<string, ChainConfig> = {
   },
 
   // ===== TESTNETS =====
-  
+
   // Avalanche Fuji Testnet
   '43113': {
     chainId: 43113,
@@ -141,7 +141,8 @@ export const defaultChains: Record<string, ChainConfig> = {
     chainId: 11155111,
     name: 'Sepolia',
     network: 'sepolia',
-    rpcUrl: process.env.SEPOLIA_RPC_URL || 'https://rpc.sepolia.org',
+    rpcUrl:
+      process.env.SEPOLIA_RPC_URL || 'https://sepolia.gateway.tenderly.co/fw5mWunY5JhNsF1V62Czj',
     blockExplorerUrl: 'https://sepolia.etherscan.io',
     isEVM: true,
   },
@@ -179,14 +180,14 @@ export const defaultChains: Record<string, ChainConfig> = {
  */
 export function getChainConfig(chainIdOrNetwork: number | string): ChainConfig | undefined {
   const key = String(chainIdOrNetwork);
-  return defaultChains[key] || Object.values(defaultChains).find(c => c.network === key);
+  return defaultChains[key] || Object.values(defaultChains).find((c) => c.network === key);
 }
 
 /**
  * Get all supported chain IDs/networks
  */
 export function getSupportedChains(): (number | string)[] {
-  return Object.values(defaultChains).map(c => c.chainId);
+  return Object.values(defaultChains).map((c) => c.chainId);
 }
 
 /**
@@ -305,13 +306,13 @@ export function getNetworkFromChainId(chainId: number | string): string | undefi
  */
 export const productionChains = [
   43114, // Avalanche
-  8453,  // Base
-  1,     // Ethereum
-  4689,  // IoTeX
-  3338,  // Peaq
-  137,   // Polygon
-  1329,  // Sei
-  196,   // XLayer
+  8453, // Base
+  1, // Ethereum
+  4689, // IoTeX
+  3338, // Peaq
+  137, // Polygon
+  1329, // Sei
+  196, // XLayer
   'solana',
   'stacks',
 ] as const;
@@ -320,12 +321,12 @@ export const productionChains = [
  * Test chains
  */
 export const testChains = [
-  43113,    // Avalanche Fuji
-  84532,    // Base Sepolia
-  80002,    // Polygon Amoy
-  1328,     // Sei Testnet
+  43113, // Avalanche Fuji
+  84532, // Base Sepolia
+  80002, // Polygon Amoy
+  1328, // Sei Testnet
   11155111, // Sepolia
-  195,      // XLayer Testnet
+  195, // XLayer Testnet
   'solana-devnet',
   'stacks-testnet',
 ] as const;
@@ -438,7 +439,12 @@ export function getCaip2Namespace(network: string): string {
  * Check if a network identifier is CAIP-2 format
  */
 export function isCaip2Format(identifier: string): boolean {
-  return identifier.includes(':') && (identifier.startsWith('eip155:') || identifier.startsWith('solana:') || identifier.startsWith('stacks:'));
+  return (
+    identifier.includes(':') &&
+    (identifier.startsWith('eip155:') ||
+      identifier.startsWith('solana:') ||
+      identifier.startsWith('stacks:'))
+  );
 }
 
 /**
