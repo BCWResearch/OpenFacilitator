@@ -144,9 +144,9 @@ function getFreeFacilitatorConfig(): { config: FacilitatorConfig; evmPrivateKey?
  */
 function isSolanaNetwork(network: string): boolean {
   return network === 'solana' ||
-         network === 'solana-mainnet' ||
-         network === 'solana-devnet' ||
-         network.startsWith('solana:');
+    network === 'solana-mainnet' ||
+    network === 'solana-devnet' ||
+    network.startsWith('solana:');
 }
 
 // isStacksNetwork is imported from @openfacilitator/core
@@ -414,7 +414,7 @@ router.post('/free/settle', async (req: Request, res: Response) => {
  */
 router.get('/free/info', (_req: Request, res: Response) => {
   const facilitatorData = getFreeFacilitatorConfig();
-  
+
   const evmAddress = facilitatorData?.evmAddress || process.env.FREE_FACILITATOR_EVM_ADDRESS;
   // Always derive Solana address from the private key to prevent env var mismatch
   const solanaAddress = facilitatorData?.solanaPrivateKey

@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "settlement": "tsx multisettle-test.ts",
+    "settlement": "tsx settlement_test.ts",
     "multisettle:local": "FACILITATOR_URL=http://localhost:3001 tsx multisettle-test.ts"
   },
   "dependencies": {
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.0",
+    "bs58": "^6.0.0",
     "viem": "^2.21.0"
   },
   "devDependencies": {
